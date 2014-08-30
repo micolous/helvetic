@@ -1,0 +1,43 @@
+fitbit without fitbit.com
+
+Based on: https://www.hackerspace-bamberg.de/Fitbit_Aria_Wi-Fi_Smart_Scale
+
+That document appears to be based on the <V32 FW (V2 protocol).  They reported bugs to Fitbit so they changed the protocol.
+
+Tested on V35 FW (V3 protocol).
+
+Step 1:
+
+Disconnect one of the batteries in the unit for 10 seconds.  When reconnecting, the screen should display "HI :)", the software version number, then "SETUP ACTIVE".
+
+If this has already been connected to a network, stand on the scales to force it to reset WiFi settings.
+
+Step 2:
+
+Connect to the scales' WiFi network.  This is named something like "Aria 1A2B3C", where the 1A2B3C represents the upper-case base16-encoded last three bytes of the MAC address of the unit.
+
+Step 3:
+
+Fire off a GET request to connect to the network:
+
+curl 'http://192.168.240.1/scale/setup?ssid=YourSsidHerecustom_password=YourNetworkPasswordHere' -H 'Cookie: token=YourTokenHere' 
+
+Step 4:
+
+Aria then connects to the network and sends a request:
+
+GET /scale/register?serialNumber=20F85EXXXXXX&token=ABCD&ssid=YourSsidHere HTTP/1.1
+Host: www.fitbit.com
+
+Serial number is MAC address of ethernet device.  The SSID is shown in the web interface normally to "help you"...
+
+Scale expects "200 OK" response to that request.
+
+Step 5:
+
+Another "synchronisation" request is made, to get settings.
+
+This request is replayable, that is, we can send the same message to the server.  But we get a slightly different response each time.
+
+
+
