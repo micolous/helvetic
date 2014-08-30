@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from bottle import request, response, get, post, run, template
 from time import time
+from crc16 import crc16xmodem
 import struct, random
 
 
@@ -8,6 +9,7 @@ import struct, random
 def register():
 	print 'register query = %r' % dict(request.query)
 	return ''
+
 
 @post('/scale/upload')
 def upload():
@@ -34,18 +36,19 @@ def upload():
 		print 'uid = %d / fat1 = %d / covar = %d / fat2 = %d' % (uid, fat1, covar, fat2)
 		body = body[32:]
 
-	print "end of body = %r" % body
-	
-	# FIXME: this still returns a sync error on the aria
-	return struct.pack('<LBBBLL16x20sLLLBLLLLLLLLLHBB',
+	print "checksum = %r" % body
+
+	d = struct.pack('<LBBBLL16x20sLLLBLLLLLLLLL',
 		int(time()), # timestamp
+
 		0x02, # units, 0x02 = KG
 		0x32, # status (configured)
 		0x01, # unknown
 		1, # user count
 		
 		1, # userid = 1
-		'ABC' + (' '*17), # Initials of user
+		#'ABC' + (' '*17), # Initials of user
+		'MICHAEL' + (' '*(20-7)),
 		
 		89000, # min tolerance (weight, g)
 		97000, # max tolerance (weight, g)
@@ -63,10 +66,11 @@ def upload():
 		0,    # unknown
 		3,    # unknown (always 3)
 		0,    # unknown
-		
-		
-		random.randint(0, 65535), # unknown value?
-		
+	)
+
+	return struct.pack('<100sHBB',
+		d,
+		crc16xmodem(d), # checksum
 		0x66, # unknown, always 0x66
 		0x00, # unknown, always 0x00
 		
