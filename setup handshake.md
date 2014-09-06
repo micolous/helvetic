@@ -45,7 +45,7 @@ GET /scale/register?serialNumber=20F85EXXXXXX&token=ABCD&ssid=YourSsidHere HTTP/
 Host: www.fitbit.com
 ```
 
-Serial number is MAC address of ethernet device.  The SSID is shown in the web interface normally to "help you"...
+Serial number is MAC address of Ethernet device.  The SSID is shown in the web interface normally to "help you"...
 
 Scale expects `200 OK` response to that request.  There is no response content.
 
@@ -63,12 +63,12 @@ They are all marked with timestamps as well as the current state of the clock on
 
 Some data has a CRC-16-CCITT (xmodem) checksum. (Python: `crc16.crc16xmodem`)
 
-### Aria -> Server comms (`aria_upload_request_envolope3`): ###
+### Aria -> Server comms (`aria_upload_request_envelope3`): ###
 
 ```
 POST /scale/upload
 
-struct aria_upload_request_envolope3 {
+struct aria_upload_request_envelope3 {
 	aria_upload_request_body3 body,
 	
 	// calculated on all bytes in body
@@ -93,7 +93,7 @@ struct aria_upload_request_body3 {
 
 struct aria_measurement {
 	uint32 id2 = 2,
-	uint32 impedence,
+	uint32 impedance,
 	uint32 weight_g,
 
 	// UNIX time of measurement.
@@ -107,10 +107,10 @@ struct aria_measurement {
 };
 ```
 
-### Server -> Aria comms (`aria_upload_response_envolope3`): ###
+### Server -> Aria comms (`aria_upload_response_envelope3`): ###
 
 ```
-struct aria_upload_envolope3 {
+struct aria_upload_envelope3 {
 	aria_upload_response_body3 body,
 
 	// calculated on all bytes in body
