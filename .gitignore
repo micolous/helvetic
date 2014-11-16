@@ -1,3 +1,4 @@
 *~
 env
 *.py[co]
+*.sqlite3
