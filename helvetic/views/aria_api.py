@@ -63,7 +63,7 @@ class ScaleUploadView(View):
 		return super(ScaleUploadView, self).dispatch(*args, **kwargs)
 
 	def post(self, request):
-		real_now = int(time())
+		now = utcnow()
 		body = request.body
 
 		# Version 3 protocol
@@ -94,8 +94,6 @@ class ScaleUploadView(View):
 
 		fw_ver, unknown2, scale_now, measurement_count = struct.unpack('<LLLL', body[:16])
 		body = body[16:]
-		skew = scale_now - real_now
-		print 'scale = %d, now = %d (%d skew)' % (scale_now, real_now, skew)
 
 		scale.fw_version = fw_ver
 		scale.save()
@@ -118,7 +116,7 @@ class ScaleUploadView(View):
 			measurement = Measurement.objects.create(
 				user=measured_user,
 				scale=scale,
-				when=utcnow() - timedelta(seconds=skew + (scale_now - ts)),
+				when=now - timedelta(seconds=scale_now - ts),
 				weight=weight,
 				body_fat=Decimal(fat1) / Decimal(1000),
 			)
@@ -137,11 +135,10 @@ class ScaleUploadView(View):
 		
 		# Insert user info
 		for profile in scale_users:
-			last_weight = last_body_fat = min_var = max_var = 0
+			last_weight = min_var = max_var = 0
 			last_measurement = profile.latest_measurement()
 			if last_measurement is not None:
-				last_weight = last_measurement.weight
-				last_body_fat = int(last_mearement.body_fat * 1000)
+				last_weight = ((last_measurement.weight) // 1000) * 1000
 				min_var = last_weight - 4000
 				if min_var < 0:
 					min_var = 0
@@ -149,25 +146,32 @@ class ScaleUploadView(View):
 
 			response += struct.pack('<L16x20sLLLBLLLLLLLLL',
 				profile.user.id,
-				profile.short_name[:20].ljust(20),
+				profile.short_name_formatted(),
 				min_var,
 				max_var,
 				profile.age(),
 				profile.gender,
 				profile.height,
-				last_weight,
-				last_body_fat,
+
+				0, # some weight
+				0, # body fat
 				0, # covariance
-				0, # another weight, we don't care
-				0, # timestamp, don't care.
+				0, # another weight
+				0, # timestamp
+
 				0, # always 0
 				3, # always 3
 				0  # always 0
 			)
 
-		return HttpResponse(response + struct.pack('HBB', 
+		response = response + struct.pack('<HBB', 
 			crc16xmodem(response), # checksum
 			0x66, # always 0x66
 			0x00, # always 0x00
-		))
+		)
+
+		hr = HttpResponse(response)
+		# Content-Length is a required element
+		hr['Content-Length'] = str(len(response))
+		return hr
 

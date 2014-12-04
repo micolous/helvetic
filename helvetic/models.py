@@ -115,10 +115,10 @@ class UserProfile(models.Model):
 		exists.
 		"""
 
-		try:
-			return self.measurement.objects.all().order_by('-when')[0]
-		except:
-			return None
+		#try:
+		return self.user.measurement.all().order_by('-when')[0]
+		#except:
+		#	return None
 
 	def age(self, from_date=None):
 		"""
@@ -130,6 +130,9 @@ class UserProfile(models.Model):
 		if from_date is None:
 			from_date = utcnow().date()
 		return relativedelta(from_date, self.birth_date).years
+	
+	def short_name_formatted(self):
+		return str(self.short_name)[:20].upper().ljust(20)
 
 class Measurement(models.Model):
 	user = models.ForeignKey(

@@ -109,6 +109,8 @@ struct aria_measurement {
 
 ### Server -> Aria comms (`aria_upload_response_envelope3`): ###
 
+**Note:** `Content-Length` HTTP header is required.
+
 ```
 struct aria_upload_envelope3 {
 	aria_upload_response_body3 body,
