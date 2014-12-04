@@ -2,7 +2,7 @@
 from bottle import request, response, get, post, run, template
 from time import time
 from crc16 import crc16xmodem
-import struct, random
+import struct
 
 
 @get('/scale/register')

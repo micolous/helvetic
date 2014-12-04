@@ -1,22 +1,44 @@
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
+from decimal import Decimal
 from django.db import models
 from django.contrib.auth.models import User
-from decimal import Decimal
-import datetime, pytz, random, string
+import pytz, random, string
 
+def utcnow():
+	return datetime.now(pytz.UTC)
 
 class Scale(models.Model):
 	hw_address = models.CharField(
+		'Hardware address',
 		max_length=12,
-		help_text='Ethernet address of the Aria'
+		help_text='Ethernet address of the Aria.'
 	)
 
 	ssid = models.CharField(
+		'SSID',
 		max_length=64,
+		help_text='SSID of the WiFi network the Aria is connected to.'
 	)
 
-	fw_version = models.PositiveIntegerField(null=True, blank=True)
-	battery_percent = models.PositiveIntegerField(null=True, blank=True)
-	auth_code = models.BinaryField(max_length=16, null=True, blank=True)
+	fw_version = models.PositiveIntegerField(
+		'Firmware version',
+		null=True,
+		blank=True,
+	)
+
+	battery_percent = models.PositiveIntegerField(
+		'Battery percent remaining',
+		null=True,
+		blank=True
+	)
+
+	auth_code = models.CharField(
+		'Authorisation code, in base16 encoding',
+		max_length=32,
+		null=True,
+		blank=True
+	)
 
 	POUNDS = 0x00
 	STONES = 0x01
@@ -28,6 +50,7 @@ class Scale(models.Model):
 	)
 
 	unit = models.PositiveIntegerField(
+		'Unit of measure',
 		choices=UNIT_CHOICES,
 		default=KILOGRAMS,
 		help_text='Display units for the scale.'
@@ -35,9 +58,19 @@ class Scale(models.Model):
 
 	owner = models.ForeignKey(
 		User,
-		help_text='Owner of these scales.'
+		help_text='Owner of these scales.',
+		related_name='owned_scales'
+	)
+	
+	users = models.ManyToManyField(
+		'UserProfile',
+		help_text='UserProfiles for the users of this scale.',
+		related_name='used_scales',
+		blank=True
 	)
 
+	def __unicode__(self):
+		return self.hw_address
 
 class UserProfile(models.Model):
 	user = models.ForeignKey(
@@ -73,12 +106,37 @@ class UserProfile(models.Model):
 		help_text='Biological gender of the user. Used to calculate body fat.'
 	)
 
+	def __unicode__(self):
+		return unicode(self.user)
+
+	def latest_measurement(self):
+		"""
+		Returns the last measurement for the user, or None if no measurement
+		exists.
+		"""
+
+		try:
+			return self.measurement.objects.all().order_by('-when')[0]
+		except:
+			return None
+
+	def age(self, from_date=None):
+		"""
+		Returns the age of the user, in years.
+		
+		If no argument is specified, the age is calculated relative to today (in
+		UTC).
+		"""
+		if from_date is None:
+			from_date = utcnow().date()
+		return relativedelta(from_date, self.birth_date).years
 
 class Measurement(models.Model):
 	user = models.ForeignKey(
 		User,
 		blank=True,
-		null=True
+		null=True,
+		related_name='measurement'
 	)
 
 	scale = models.ForeignKey(
@@ -98,12 +156,11 @@ class Measurement(models.Model):
 		null=True
 	)
 
-
 def _generate_auth_expiry():
 	"""
 	Generate an expiry time for an authorisation token (T + 1 hour)
 	"""
-	return datetime.datetime.now(pytz.UTC) + datetime.timedelta(hours=1)
+	return utcnow() + timedelta(hours=1)
 
 def _generate_auth_key():
 	"""
@@ -126,4 +183,24 @@ class AuthorisationToken(models.Model):
 		max_length=10,
 		default=_generate_auth_key
 	)
+	
+	@classmethod
+	def lookup_token(cls, key):
+		"""
+		Looks up the given key to see if there is a token that matches.
+		
+		Cleans up any expired tokens in the process.
+		
+		Returns None if no token is valid.
+		"""
+		now = utcnow()
+		cls.objects.filter(expires__lte=now).delete()
+
+		try:
+			# Also sanity-check tokens here, in case delete fails or is not yet
+			# consistent.
+			return cls.objects.get(expires__gt=now, key=key)
+		except cls.DoesNotExist:
+			return
+
 

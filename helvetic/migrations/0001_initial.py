@@ -41,13 +41,13 @@ class Migration(migrations.Migration):
             name='Scale',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('hw_address', models.CharField(help_text=b'Ethernet address of the Aria', max_length=12)),
-                ('ssid', models.CharField(max_length=64)),
-                ('fw_version', models.PositiveIntegerField(null=True, blank=True)),
-                ('battery_percent', models.PositiveIntegerField(null=True, blank=True)),
-                ('auth_code', models.BinaryField(max_length=16, null=True, blank=True)),
-                ('unit', models.PositiveIntegerField(default=2, help_text=b'Display units for the scale.', choices=[(0, b'Pounds'), (1, b'Stones'), (2, b'Kilograms')])),
-                ('owner', models.ForeignKey(help_text=b'Owner of these scales.', to=settings.AUTH_USER_MODEL)),
+                ('hw_address', models.CharField(help_text=b'Ethernet address of the Aria.', max_length=12, verbose_name=b'Hardware address')),
+                ('ssid', models.CharField(help_text=b'SSID of the WiFi network the Aria is connected to.', max_length=64, verbose_name=b'SSID')),
+                ('fw_version', models.PositiveIntegerField(null=True, verbose_name=b'Firmware version', blank=True)),
+                ('battery_percent', models.PositiveIntegerField(null=True, verbose_name=b'Battery percent remaining', blank=True)),
+                ('auth_code', models.CharField(max_length=32, null=True, verbose_name=b'Authorisation code, in base16 encoding', blank=True)),
+                ('unit', models.PositiveIntegerField(default=2, help_text=b'Display units for the scale.', verbose_name=b'Unit of measure', choices=[(0, b'Pounds'), (1, b'Stones'), (2, b'Kilograms')])),
+                ('owner', models.ForeignKey(related_name='owned_scales', to=settings.AUTH_USER_MODEL, help_text=b'Owner of these scales.')),
             ],
             options={
             },
@@ -66,6 +66,12 @@ class Migration(migrations.Migration):
             options={
             },
             bases=(models.Model,),
+        ),
+        migrations.AddField(
+            model_name='scale',
+            name='users',
+            field=models.ManyToManyField(help_text=b'UserProfiles for the users of this scale.', related_name='used_scales', to='helvetic.UserProfile'),
+            preserve_default=True,
         ),
         migrations.AddField(
             model_name='measurement',
