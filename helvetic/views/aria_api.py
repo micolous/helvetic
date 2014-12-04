@@ -164,7 +164,7 @@ class ScaleUploadView(View):
 				0  # always 0
 			)
 
-		response = response + struct.pack('<HBB', 
+		response = response + struct.pack('<HBB',
 			crc16xmodem(response), # checksum
 			0x66, # always 0x66
 			0x00, # always 0x00

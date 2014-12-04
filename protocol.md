@@ -2,7 +2,7 @@
 
 Based on: https://www.hackerspace-bamberg.de/Fitbit_Aria_Wi-Fi_Smart_Scale
 
-That document appears to be based on the &lt;V32 FW (V2 protocol).  They reported bugs to Fitbit so they changed the protocol.
+That document appears to be based on the &lt;V32 FW (V2 protocol).  They reported security bugs to Fitbit, so the protocol was changed.
 
 All the values are *little-endian* (Intel byte order).
 
