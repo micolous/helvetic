@@ -2,3 +2,4 @@
 env
 *.py[co]
 *.sqlite3
+firmware/

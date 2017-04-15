@@ -63,6 +63,8 @@ They are all marked with timestamps as well as the current state of the clock on
 
 Some data has a CRC-16-CCITT (xmodem) checksum. (Python: `crc16.crc16xmodem`)
 
+The Aria will also periodically (~daily) send a request with no measurements in order to check for firmware updates.  More detail is given in `firmware.md`.
+
 ### Aria -> Server comms (`aria_upload_request_envelope3`): ###
 
 ```
@@ -118,7 +120,7 @@ struct aria_upload_envelope3 {
 	// calculated on all bytes in body
 	uint16 crc16,
 
-	uint8 unknown2 = 0x66,
+	uint8 unknown2 = 0x66, // sometimes also 0xAC
 	uint8 unknown3 = 0x00
 };
 
@@ -132,8 +134,14 @@ struct aria_upload_response_body3 {
 	uint8 unknown1 = 0x01,
 	uint32 user_count,
 	aria_user[user_count] users
-}
+	update_available_type update_available,
+	
+	// if an update is available, then include the update struct
+	update_msg update_info,
 
+	uint32 unknown2 = 3,
+	uint32 unknown3 = 0
+};
 
 enum unit_type uint8 {
 	pounds    = 0,
@@ -165,8 +173,6 @@ struct aria_user {
 	uint32 timestamp,
 
 	uint32 unknown1 = 0,
-	uint32 unknown2 = 3,
-	uint32 unknown3 = 0
 };
 
 enum gender_type uint8 {
@@ -175,5 +181,14 @@ enum gender_type uint8 {
 	unknown = 0x34
 };
 
+enum update_available_type uint32 {
+	yes = 0x01,
+	no = 0x03
+};
+
+struct update_msg {
+	str update_url // NULL terminated string pointing to update firmware image
+};
 ```
+
 
