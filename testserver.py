@@ -13,6 +13,7 @@ def register():
 
 @post('/scale/upload')
 def upload():
+	print 'headers = %r' % dict(request.headers)
 	response.set_header('Content-Type', 'application/octet-stream;charset=UTF-8')
 
 	body = request.body.read()
