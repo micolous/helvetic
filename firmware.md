@@ -2,6 +2,14 @@
 
 TODO: work on this more ;)
 
+## SoC
+
+Uses a GainSpan 1101MEE IoT system-on-chip.  This contains [two ARM7 processors](https://www.sparkfun.com/products/retired/10808).  In the Aria, the core Aria application logic runs on the Application Processor, and there is a second processor running WiFi.
+
+Third-party teardown: http://pooloferrors.com/project/2015/01/10/fitbit-teardown.html
+
+Aria uses some extra features, such as a [modified version of the Gainspan provisioning service](https://s3.amazonaws.com/site_support/uploads/document_upload/ADK-PROV-PB.pdf), and a modified OTA update process which pulls from a remote web server (rather than being uploaded locally).
+
 ## Firmware updates
 
 Firmware updates are retrieved from `http://www.fitbit.com/scale/firmware/${VERSION}?serialNumber=${SERIAL}`.
@@ -14,6 +22,10 @@ Firmware updates are retrieved from `http://www.fitbit.com/scale/firmware/${VERS
 * `001DC9D05221` (hard coded in some strings)
 
 At the time of writing, only firmware versions 33, 35, 38 and 39 can be downloaded. [Fitbit also publish some information about security updates](https://help.fitbit.com/articles/en_US/Help_article/1164).
+
+This contains all the code which runs on the GainSpan processors.
+
+The GainSpan EVK (available via support portal) looks like it should be able to dump firmware from the device in 128KB chunks, but this isn't tested.
 
 ## Notes
 
@@ -30,6 +42,12 @@ $ sha256sum *
 f0a315fcfa1e5add944869628ea775934670255ac4b540a9dd87ab518c37b03f  firmware-38.dat
 75038492de789cc57a3250fc1f27fcee312215601acf7d5a665668129d87cc3b  firmware-39.dat
 ```
+
+### Layout
+
+The first 0x10 bytes appear to contain the firmware versions.
+
+Gainspan call the WiFi Firmware `wfw`, this appears around `0x3ed18` to `0x5dc7f` in firmware-39.
 
 ### Binwalk output
 
