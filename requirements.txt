@@ -1,6 +1,4 @@
-argparse
-bottle
 crc16
 python-dateutil
 pytz
-
+Django==1.11

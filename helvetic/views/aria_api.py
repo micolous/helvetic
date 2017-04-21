@@ -1,4 +1,9 @@
+# -*- mode: python; indent-tabs-mode: nil; tab-width: 2 -*-
+"""
+aria_api.py - implements handlers which are for the Aria to talk to helvetic.
+"""
 from __future__ import absolute_import
+
 from base64 import b16encode
 from crc16 import crc16xmodem
 from datetime import timedelta
@@ -49,7 +54,7 @@ class ScaleRegisterView(View):
 		scale = Scale.objects.create(
 			hw_address=serial,
 			ssid=ssid,
-			owner=owner
+			owner=owner,
 		)
 
 		# Only return 200 OK

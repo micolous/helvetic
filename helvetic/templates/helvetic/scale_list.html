@@ -1,0 +1,17 @@
+{# -*- mode: html; indent-tabs-mode: nil; tab-width: 2 -*- #}
+{% extends "helvetic/base.html" %}
+
+{% block content %}
+{# TODO: make this a proper table #}
+<p><a href="{% url 'register_index' %}">Add new Aria</a></p>
+
+	{% if object_list %}
+	  <ul>
+	  {% for scale in object_list %}
+	    <li>{{ scale.hw_address }} | {{ scale.ssid }}</li>
+	  {% endfor %}
+	  </ul>
+	{% else %}
+		<p>There are no scales associated with your account.</p>
+	{% endif %}
+{% endblock %}

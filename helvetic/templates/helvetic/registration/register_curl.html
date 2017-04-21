@@ -1,0 +1,36 @@
+{# -*- mode: html; indent-tabs-mode: nil; tab-width: 2 -*- #}
+{% extends "helvetic/base.html" %}
+{% load humanize %}
+
+{% block content %}
+  <p>Note: below key expires <abbr title="{{ auth_token.expires }}">{{ auth_token.expires|naturaltime }}</abbr>. Reloading this page will invalidate existing keys.</p>
+  
+  <h2>Configuration steps</h2>
+  <p>Step 1: Enter your WiFi SSID and PSK (passphrase) here.</p>
+  
+  <form>
+    <p>SSID: <input type="text" id="ssid"></p>
+    <p>PSK: <input type="password" id="psk"></p>
+    <input type="button" value="OK" id="btnOk">
+  </form>
+  
+  <p>Step 2: Connect to the wireless network for the Aria.  It will be named something like <code>Aria 1A2B3C</code>.</p>
+  
+  <p>Step 3: Run the following command in a terminal. This will send configuration details to your Aria for your network, and allow it to authenticate with <em>helvetic</em>.</p>
+  
+  <p><code>curl 'http://192.168.240.1/scale/setup?ssid=<span id="ssid_cmd"></span>&custom_password=<span id="psk_cmd"></span>' -H 'Cookie: token={{ auth_token.key }}'</code></p>
+
+  <script type="text/javascript">
+    function refresh_url() {
+      $('#ssid_cmd').text($('#ssid').val());
+      $('#psk_cmd').text($('#psk').val());
+    }
+    
+    $('#ssid').change(refresh_url);
+    $('#psk').change(refresh_url);
+    $('#btnOk').click(refresh_url);
+    refresh_url();
+  </script>
+
+  <p>Step 4: Connect to your home network again, and verify that your Aria appears in <a href="{% url 'scale_list' %}">My Devices</a>.</p>
+{% endblock %}

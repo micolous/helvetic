@@ -1,0 +1,10 @@
+{# -*- mode: html; indent-tabs-mode: nil; tab-width: 2 -*- #}
+{% extends "helvetic/base.html" %}
+
+{% block content %}
+  <ul>
+    <li><a href="{% url 'scale_list' %}">My devices</a></li>
+    <li><a href="{% url 'register_index' %}">Register new Aria</a></li>
+    <li><a href="{% url 'admin:index' %}">Django Admin site</a> (allows database access)</li>
+  </ul>
+{% endblock %}

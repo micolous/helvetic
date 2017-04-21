@@ -1,0 +1,13 @@
+{# -*- mode: html; indent-tabs-mode: nil; tab-width: 2 -*- #}
+{% extends "helvetic/base.html" %}
+
+{% block content %}
+  <p>Registration is presently only supported via cURL.</p>
+  
+  <form method="post" action="{% url 'register_curl' %}">
+    {% csrf_token %}
+    <input type="submit" value="Start registration via cURL" />
+  </form>
+
+{% endblock %}
+
