@@ -10,6 +10,12 @@ def register():
 	print 'register query = %r' % dict(request.query)
 	return ''
 
+@get('/scale/validate')
+def validate():
+	# Context: https://github.com/micolous/helvetic/issues/1
+	print 'validate query = %r' % dict(request.query)
+	return 'T'
+
 
 @post('/scale/upload')
 def upload():

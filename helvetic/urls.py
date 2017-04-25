@@ -7,13 +7,19 @@ urlpatterns = [
   url(
     r'^scale/register$',
     aria_api.ScaleRegisterView.as_view(),
-    name='scale_register'
+    name='scaleapi_register'
   ),
 
   url(
     r'^scale/upload$',
     aria_api.ScaleUploadView.as_view(),
-    name='scale_upload'
+    name='scaleapi_upload'
+  ),
+
+  url(
+    r'^scale/validate$',
+    aria_api.ScaleValidateView.as_view(),
+    name='scaleapi_validate'
   ),
   
   url(

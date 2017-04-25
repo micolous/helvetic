@@ -21,6 +21,19 @@ from time import time
 from ..models import AuthorisationToken, Measurement, Scale, utcnow
 
 
+class ScaleValidateView(View):
+  def get(self, request):
+    # Context: https://github.com/micolous/helvetic/issues/1
+    #
+    # Sometimes the scale is trying to verify that it authenticated with the
+    # correct token. We don't really care about these requests (it is handled
+    # by /scale/register aka ScaleRegisterView), so we can just always return
+    # "T" (OK).
+    #
+    # The real service returns "F" on error.
+    return HttpResponse('T')
+
+
 class ScaleRegisterView(View):
 	def get(self, request):
 		if 'serialNumber' not in request.GET:
