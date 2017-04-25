@@ -9,7 +9,7 @@ It requires local DNS spoofing in order to intercept requests originally bound f
 ## Currently implemented
 
 * Recording data
-* Sending preferences and user profiles to Aria
+* Sending preferences and 1 user profile to Aria
 * Registering new device
 
 ## Partially implemented
@@ -17,6 +17,7 @@ It requires local DNS spoofing in order to intercept requests originally bound f
 * Viewing data (through Django Admin)
 * Configuration manager (through Django Admin)
 * Profile manager (through Django Admin)
+* Sending more than 1 user profile to Aria
 
 ## Planned
 
