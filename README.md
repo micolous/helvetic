@@ -9,7 +9,7 @@ It requires local DNS spoofing in order to intercept requests originally bound f
 ## Currently implemented
 
 * Recording data
-* Sending preferences and 1 user profile to Aria
+* Sending preferences and 1-2 user profiles to Aria
 * Registering new device
 
 ## Partially implemented

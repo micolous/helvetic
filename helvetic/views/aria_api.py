@@ -161,8 +161,7 @@ class ScaleUploadView(View):
 				if min_var < 0:
 					min_var = 0
 				max_var = last_weight + 4000
-
-			response += struct.pack('<L16x20sLLLBLLLLLLLLL',
+			response += struct.pack('<L16x20sLLLBLLLLLL',
 				profile.user.id,
 				profile.short_name_formatted(),
 				min_var,
@@ -176,15 +175,20 @@ class ScaleUploadView(View):
 				0, # covariance
 				0, # another weight
 				0, # timestamp
-
-				0, # always 0
-				3, # always 3
-				0  # always 0
 			)
 
+		response = response + struct.pack('<LLL',
+			0, # always 0
+			3, # update status: no
+			0, # unknown
+		)
+		if len(scale_users) == 1: 
+			trailer = 0x66 # (for one user?) always 0x66 sometimes also 0xac
+		else:
+			trailer = 0xb3 # shown to be 0xb3 for two users
 		response = response + struct.pack('<HBB',
 			crc16xmodem(response), # checksum
-			0x66, # always 0x66
+			trailer, 
 			0x00, # always 0x00
 		)
 
