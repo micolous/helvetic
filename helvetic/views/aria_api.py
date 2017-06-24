@@ -182,14 +182,11 @@ class ScaleUploadView(View):
 			3, # update status: no
 			0, # unknown
 		)
-		if len(scale_users) == 1: 
-			trailer = 0x66 # (for one user?) always 0x66 sometimes also 0xac
-		else:
-			trailer = 0xb3 # shown to be 0xb3 for two users
-		response = response + struct.pack('<HBB',
+
+		trailer = 0x19 + (len(scale_users) * 0x4d)
+		response = response + struct.pack('<HH',
 			crc16xmodem(response), # checksum
 			trailer, 
-			0x00, # always 0x00
 		)
 
 		hr = HttpResponse(response)

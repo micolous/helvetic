@@ -75,12 +75,10 @@ def upload():
 		0,    # unknown
 	)
 
-	return struct.pack('<100sHBB',
+	return struct.pack('<100sHH',
 		d,
 		crc16xmodem(d), # checksum
-		0x66, # unknown, always 0x66
-		0x00, # unknown, always 0x00
-		
+		(0x19 + (1 * 0x4d)), # size of message
 	)
 
 run(host='0.0.0.0', port=80)
