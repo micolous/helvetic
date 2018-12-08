@@ -39,7 +39,7 @@ server:
 * `HEL_GENDER`: 'F' = female, 'M' = male, unset = unknown; may be used by
   scales to calculate body fat?
 
-* 'HEL_HEIGHT`: height, in millimetres, used to calculate body fat
+* `HEL_HEIGHT`: height, in millimetres, used to calculate body fat
 
 ## Endpoints
 
